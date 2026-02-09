@@ -90,7 +90,7 @@ html = f'''<!DOCTYPE html>
             <div class="standings-panel">
                 <h2 id="predictedTitle">Best Prediction</h2>
                 <table>
-                    <thead><tr><th>#</th><th>Team</th></tr></thead>
+                    <thead><tr><th>#</th><th>Team</th><th>Off</th></tr></thead>
                     <tbody id="predictedBody"></tbody>
                 </table>
             </div>
@@ -155,12 +155,12 @@ html = f'''<!DOCTYPE html>
                 `Best Prediction (${{cap(data.best_user)}})`;
             document.getElementById('predictedBody').innerHTML = data.predicted.map(r => {{
                 const actualPos = actualMap[r.team];
-                const isMatch = actualPos === r.position;
-                const cls = isMatch ? 'match' : 'no-match';
-                const icon = isMatch ? '\u2713' : '\u2717';
+                const diff = Math.abs(actualPos - r.position);
+                const cls = diff === 0 ? 'match' : 'no-match';
                 return `<tr>
                     <td class="rank">${{r.position}}</td>
-                    <td class="${{cls}}"><span class="match-icon">${{icon}}</span> ${{r.team}}</td>
+                    <td class="${{cls}}">${{r.team}}</td>
+                    <td class="${{cls}}">${{diff === 0 ? '\u2713' : diff}}</td>
                 </tr>`;
             }}).join('');
             document.getElementById('actualBody').innerHTML = data.actual.map(r => {{
