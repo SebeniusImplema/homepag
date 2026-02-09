@@ -82,7 +82,7 @@ html = f'''<!DOCTYPE html>
         </div>
         <table id="scoreTable">
             <thead>
-                <tr><th>Rank</th><th>Player</th><th>Cumulative Score</th><th>Change</th></tr>
+                <tr><th>Rank</th><th>Player</th><th>Round Score</th><th>Change</th></tr>
             </thead>
             <tbody id="scoreBody"></tbody>
         </table>
