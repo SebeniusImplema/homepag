@@ -39,7 +39,7 @@
 
         .loading { text-align: center; padding: 2rem; color: #4b5563; }
 
-        .standings-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 2rem; }
+        .standings-grid { display: grid; grid-template-columns: 1fr 2fr; gap: 1.5rem; margin-bottom: 2rem; }
         .standings-panel { background: #1b2233; border-radius: 0.75rem; padding: 1rem; overflow-x: auto; border: 1px solid #252e3f; }
         .standings-panel h2 { font-size: 1rem; margin-bottom: 0.75rem; }
         .standings-panel table { margin-bottom: 0; font-size: 0.85rem; }
@@ -47,6 +47,7 @@
         .standings-panel td { padding: 0.5rem 0.6rem; }
         .match { color: #5b9e7a; }
         .no-match { color: #b06060; }
+        .match-icon { font-weight: 700; margin-right: 0.3rem; }
         @media (max-width: 768px) { .standings-grid { grid-template-columns: 1fr; } }
     </style>
 </head>
@@ -93,6 +94,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
     <script>
         const COLORS = ['#5a7da8','#b09558','#5b9e7a','#b06060','#7e6fa8','#a66b8a','#4d9690','#b07850'];
+        const cap = s => s.charAt(0).toUpperCase() + s.slice(1);
         let chart = null;
         let currentRound = null;
 
@@ -124,7 +126,7 @@
                 else if (s.rank_change.includes('\u2193')) changeCls = 'change-down';
                 return `<tr>
                     <td class="rank${cls}">${s.rank}</td>
-                    <td>${s.team_name}</td>
+                    <td>${cap(s.team_name)}</td>
                     <td class="score">${s.cumulative_score.toLocaleString()}</td>
                     <td class="${changeCls}">${s.rank_change}</td>
                 </tr>`;
@@ -138,13 +140,15 @@
             const actualMap = {};
             data.actual.forEach(r => { actualMap[r.team] = r.position; });
             document.getElementById('predictedTitle').textContent =
-                `Best Prediction (${data.best_user})`;
+                `Best Prediction (${cap(data.best_user)})`;
             document.getElementById('predictedBody').innerHTML = data.predicted.map(r => {
                 const actualPos = actualMap[r.team];
-                const cls = actualPos === r.position ? 'match' : 'no-match';
+                const isMatch = actualPos === r.position;
+                const cls = isMatch ? 'match' : 'no-match';
+                const icon = isMatch ? '\u2713' : '\u2717';
                 return `<tr>
                     <td class="rank">${r.position}</td>
-                    <td class="${cls}">${r.team}</td>
+                    <td class="${cls}"><span class="match-icon">${icon}</span> ${r.team}</td>
                 </tr>`;
             }).join('');
             document.getElementById('actualBody').innerHTML = data.actual.map(r => {
@@ -171,7 +175,7 @@
                 data: {
                     labels: data.rounds,
                     datasets: teams.map((name, i) => ({
-                        label: name,
+                        label: cap(name),
                         data: data.teams[name],
                         borderColor: COLORS[i % COLORS.length],
                         backgroundColor: COLORS[i % COLORS.length] + '22',
